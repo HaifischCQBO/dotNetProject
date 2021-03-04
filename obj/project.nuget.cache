@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HCQhHdik/4B9xGSG7P/U3YEM0BrxZNT9zRzrMwjWLljmHlGFfQhxsCI4FE7ScaExPQJ5R4zm+Iu1ObVCLQ/2Sg==",
+  "dgSpecHash": "xv7DUXz8hyte/GMMjMHkmbGe4jaRyF7CPFjehiTqyhgb1brvSdj+fgPO9EyQXXd04CWA97s1hHYb5X1xxVHJzw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\victo\\source\\repos\\Automation Test Engineer\\Automation Test Engineer.csproj",
+  "projectFilePath": "C:\\Users\\victo\\Source\\Repos\\HaifischCQBO\\dotNetProject\\Automation Test Engineer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\victo\\.nuget\\packages\\microsoft.codecoverage\\16.8.3\\microsoft.codecoverage.16.8.3.nupkg.sha512",
     "C:\\Users\\victo\\.nuget\\packages\\microsoft.csharp\\4.3.0\\microsoft.csharp.4.3.0.nupkg.sha512",

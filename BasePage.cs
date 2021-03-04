@@ -1,9 +1,12 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,25 +16,32 @@ namespace Automation_Test_Engineer
     public class BasePage
     {
         static IWebDriver _driver;
-        private string root = Environment.CurrentDirectory;
-        private int waitingTimeInSeconds = 20;
+        static IWebElement _element;
+        private TimeSpan waitingTimeInSeconds = TimeSpan.FromSeconds(20);
+        string webAppUrl = TestContext.Parameters["webAppUrl"];
+        private List<IWebElement> list;
+        WebDriverWait wait;
 
         [SetUp]
         public void Setup()
         {
+            //1. Open Chrome
             _driver = new ChromeDriver(@"..\..\..\driver\");
-            _driver.Navigate().GoToUrl("https://sdetteamintl.z22.web.core.windows.net/");
+            //2. Navigate to http://automationpractice.com/
+            _driver.Navigate().GoToUrl(webAppUrl);
+            _driver.Manage().Window.Maximize();
         }
         [TearDown]
         public void Terminate()
         {
+            //CLose browser, exit rutine
             _driver.Quit();
 
         }
 
         public void WaitUntilElementBeClickeable(By by)
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds));
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
 
             try
             {
@@ -52,7 +62,7 @@ namespace Automation_Test_Engineer
         public bool WaitUntilPageTitle(string pageTitle)
         {
 
-           return  new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds)).Until(ExpectedConditions.TitleContains(pageTitle));
+            return new WebDriverWait(_driver, waitingTimeInSeconds).Until(ExpectedConditions.TitleContains(pageTitle));
 
         }
 
@@ -63,9 +73,16 @@ namespace Automation_Test_Engineer
 
         }
 
+        public void ClickBy(IWebElement element)
+        {
+
+            element.Click();
+
+        }
+
         public void SendKeys(By by, string valueToType)
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds));
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
 
             try
             {
@@ -86,7 +103,7 @@ namespace Automation_Test_Engineer
 
         public string getText(By by)
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds));
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
 
             try
             {
@@ -105,9 +122,9 @@ namespace Automation_Test_Engineer
             }
         }
 
-        public void SelectElement(By by, string valueToType )
+        public void SelectElement(By by, string valueToType)
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds));
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
 
             try
             {
@@ -127,7 +144,7 @@ namespace Automation_Test_Engineer
 
         public void isDisplayed(By by)
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(waitingTimeInSeconds));
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
 
             try
             {
@@ -137,7 +154,7 @@ namespace Automation_Test_Engineer
                     return (tempElement.Displayed && tempElement.Enabled) ? tempElement : null;
                 }
                 );
-              
+
             }
             catch (WebDriverTimeoutException)
             {
@@ -159,6 +176,67 @@ namespace Automation_Test_Engineer
         public string getWindowTitle()
         {
             return _driver.Title;
+        }
+
+        public void Dev(string text)
+        {
+            Debug.Write("\r\n DEV: " + text);
+        }
+
+        public ReadOnlyCollection<IWebElement> waitUntilPresenceofAllElements(By by)
+        {
+            WebDriverWait wait = new WebDriverWait(_driver, waitingTimeInSeconds);
+            ReadOnlyCollection<IWebElement> _list;
+
+            _list = wait.Until(e => e.FindElements(by));
+
+            return _list;
+
+        }
+        public List<IWebElement> returnList(By by)
+        {
+            waitUntilPresenceofAllElements(by);
+            list = new List<IWebElement>(_driver.FindElements(by));
+            Dev("Number of Element on the list: " + list.Count);
+            return list;
+
+
+        }
+
+        public void MouseOverElementToElement(IWebElement element1, IWebElement element2)
+        {
+            Actions action = new Actions(_driver);
+            action.MoveToElement(element1).MoveToElement(element2).Click().Build().Perform();
+
+        }
+        public void MouseOverElementToElement(IWebElement element, By by)
+        {
+            Actions action = new Actions(_driver);
+            action.MoveToElement(element).Build().Perform();
+            WaitUntilElementBeClickeable(by);
+            IWebElement element2 = _driver.FindElement(by);
+            action.MoveToElement(element2).Click().Build().Perform();
+
+        }
+
+        public int CheckProductQuantity(By by)
+        {
+            Pause(1000);
+            _element = _driver.FindElement(by);
+            string n_products = _element.Text;
+            if (n_products.Contains("empty"))
+            {
+
+                return 0;
+            }
+            else
+            {
+                Dev("Number of Elements in the Cart: " + n_products);
+                return int.Parse(n_products);
+
+            }
+
+
         }
     }
 }
